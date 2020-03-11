@@ -1,6 +1,10 @@
 # logs
 There are pretained models for C3Net.
 
+C3Net-Burst: C3Net-Burst pretained model using conventional L1 loss + L1 UV loss,   
+whose number of AVC_Block is 5 and number of channel 48.    
+The PSNR / SSIM result in validation phase is 40.62 / 0.99.
+
 C3Net-5_L1: C3Net pretained model using conventional L1 loss, whose number of AVC_Block is 5.  
 The PSNR / SSIM result in validation phase is 40.62 / 0.99.  
 
