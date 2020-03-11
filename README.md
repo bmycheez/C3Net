@@ -12,19 +12,19 @@ If you find our project useful in your research, please consider citing:
 ~~~
 
 # Dependencies
-Python 3.6.9
-PyTorch 1.4.0
+Python 3.6.9 
+PyTorch 1.4.0 
 
 # Data
 [Reference](https://competitions.codalab.org/competitions/22223#participate-get_data)
 
 # Proposed algorithm
-![C3Net (Track 1: Single Image)](Fig1.png)
-![AVC_Block](Fig2.png)
-![AttBlock](Fig3.png)
-![ResBlock](Fig4.png)
-![C3Net-Burst (Track 2: Burst)](Fig5.png)
-![AVC_Block-Burst](Fig6.png)
+![C3Net (Track 1: Single Image)](Fig1.png) 
+![AVC_Block](Fig2.png) 
+![AttBlock](Fig3.png) 
+![ResBlock](Fig4.png) 
+![C3Net-Burst (Track 2: Burst)](Fig5.png) 
+![AVC_Block-Burst](Fig6.png) 
 
 # Training
 Use the following command to use our training codes
