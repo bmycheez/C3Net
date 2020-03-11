@@ -1,7 +1,7 @@
 # logs
 There are pretained models for C3Net.
 
-C3Net-Burst: C3Net-Burst used global maxpoolong, pretained model using conventional L1 loss + L1 UV loss,   
+C3Net-Burst: C3Net-Burst used global maxpooling, pretained model using conventional L1 loss + L1 UV loss,   
 whose number of AVC_Block is 5 and number of channel 48.    
 The PSNR / SSIM result in validation phase is 40.55 / 0.99.
 
