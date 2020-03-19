@@ -18,12 +18,12 @@ PyTorch 1.4.0
 [Reference](https://competitions.codalab.org/competitions/22223#participate-get_data)
 
 # Proposed algorithm
-![C3Net (Track 1: Single Image)](Fig1.png)   
-![AVC_Block](Fig2.png)   
+![C3Net (Track 1: Single Image)](Fig1_final.png)   
+![AVC_Block](Fig2_41.05.png)   
 ![AttBlock](Fig3.png)   
 ![ResBlock](Fig4.png)   
-![C3Net-Burst (Track 2: Burst)](Fig5.png)   
-![AVC_Block-Burst](Fig6.png)   
+![C3Net-Burst (Track 2: Burst)](Fig5_final.png)   
+![AVC_Block-Burst](Fig6_final.png)   
 
 # Training
 Use the following command to use our training codes
