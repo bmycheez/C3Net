@@ -31,6 +31,10 @@ Use the following command to use our training codes
 ~~~
 python train.py
 ~~~
+For training pre-trained model, download the model first.  
+[trained model (Track 1: Single Image)](https://drive.google.com/open?id=1UX9Q-OzcRHuDZ0ZRjGO-j7UdghNwL_lV)  
+[trained model (Track 2: Burst)](https://drive.google.com/open?id=1pzT2OMAmq7yEhmF_NQqiFwwg4FbofaOk)  
+Then, set the option --resume to where the downloaded model is.  
 There are other options you can choose.
 Please refer to train.py.
 
@@ -39,6 +43,10 @@ Use the following command to use our test codes
 ~~~
 python test.py
 ~~~
+For testing pre-trained model, download the model first.  
+[trained model (Track 1: Single Image)](https://drive.google.com/open?id=1UX9Q-OzcRHuDZ0ZRjGO-j7UdghNwL_lV)  
+[trained model (Track 2: Burst)](https://drive.google.com/open?id=1pzT2OMAmq7yEhmF_NQqiFwwg4FbofaOk)  
+Then, set the option --logdir to where the downloded model is.  
 There are other options you can choose.
 Please refer to test.py.
 
