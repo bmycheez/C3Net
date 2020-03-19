@@ -6,8 +6,7 @@ If you find our project useful in your research, please consider citing:
 @inproceedings{kim2020c3net,
   title={C3Net: Demoireing Network Attentive in Channel, Color and Concatenation},
   author={Kim, Sangmin and Nam, Hyungjoon and Kim, Jisu and Jeong, Jechang},
-  booktitle={New Trends in Image Restoration and Enhancement workshop and challenges on image and video restoration and enhancement
-  (NTIRE 2020)},
+  booktitle={Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition Workshops},
   year={2020}
 ~~~
 
