@@ -19,11 +19,11 @@ PyTorch 1.4.0
 
 # Proposed algorithm
 ![C3Net (Track 1: Single Image)](Fig1_final.png)   
-![AVC_Block](Fig2_41.05.png)   
+![AVC_Block](fig2_must.png)   
 ![AttBlock](Fig3.png)   
 ![ResBlock](Fig4.png)   
 ![C3Net-Burst (Track 2: Burst)](Fig5_final.png)   
-![AVC_Block-Burst](Fig6_final.png)   
+![AVC_Block-Burst](fig6_must.png)   
 
 # Training
 Use the following command to use our training codes
