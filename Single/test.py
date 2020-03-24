@@ -3,24 +3,21 @@ import os
 import argparse
 import glob
 import time
-import numpy as np
-import torch
-import torch.nn as nn
-from torchvision.utils import save_image
 from torch.autograd import Variable
-from models import DnCNN, Net
-# from DHDN_gray import Net
+from models_v2 import Net
 from utils import *
 
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 parser = argparse.ArgumentParser(description="DnCNN_Test")
-# parser.add_argument("--num_of_layers", type=int, default=17, help="Number of total layers")
-parser.add_argument("--logdir", type=str, default="logs", help='path of log files')
-# parser.add_argument("--test_data", type=str, default='Set68', help='test on Set12 or Set68')
-# parser.add_argument("--test_noiseL", type=float, default=15, help='noise level used on test set')
+parser.add_argument("--num", type=int, default=3, help="Number of total layers")
+parser.add_argument("--logdir", type=str, default=".", help='path of log files')
+parser.add_argument("--gpu", type=str, default='0', help='test on Set12 or Set68')
+parser.add_argument("--inputdir", type=str, default='DemoireingTestInputSingle', help='noise level used on test set')
 opt = parser.parse_args()
+
+
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = opt.gpu
 
 
 def normalize(data):
@@ -75,6 +72,21 @@ def self_ensemble(out, mode, forward):
     return out
 
 
+def self_ensemble_v2(out, mode, forward):
+    if mode == 0:
+        # original
+        out = out
+    elif mode == 1:
+        # flip up and down
+        out = np.flipud(out)
+    elif mode == 2:
+        out = np.fliplr(out)
+    elif mode == 3:
+        out = np.flipud(out)
+        out = np.fliplr(out)
+    return out
+
+
 def main():
     # Build model
     print('Loading model ...\n')
@@ -88,11 +100,12 @@ def main():
         return
     model.load_state_dict(a)
     DHDN_flag = 4
-    ensemble_flag = 1
+    ensemble_flag = 4
     model.eval()
     # load data info
     print('Loading data info ...\n')
-    files_source = glob.glob(os.path.join('.', 'ValidationInputSingle', '*.png'))
+    files_source = glob.glob(os.path.join('D:/', opt.inputdir, '*_%d.png'
+                                          % opt.num))
     files_source.sort()
     # process data
     psnr_test = 0
@@ -101,12 +114,10 @@ def main():
         # image
         start = time.time()
         final = np.zeros(cv2.imread(f).shape)
-        for mode in range(1):
+        for mode in range(ensemble_flag):
             Img = cv2.imread(f)
             hh, ww, cc = Img.shape
-            for ch in range(cc):
-                pl = Img[:, :, ch]
-                Img[:, :, ch] = self_ensemble(pl, mode, 1)
+            Img = self_ensemble_v2(Img, mode, 1)
             Img = np.swapaxes(Img, 0, 2)
             Img = np.swapaxes(Img, 1, 2)
             Img = np.float32(normalize(Img))
@@ -131,8 +142,7 @@ def main():
                     name = '0' + name
             out = Out.squeeze(0).permute(1, 2, 0) * 255
             out = out.cpu().numpy()
-            for ch in range(cc):
-                out[:, :, ch] = self_ensemble(out[:, :, ch], mode, 0)
+            out = self_ensemble_v2(out, mode, 0)
             final += out
         cv2.imwrite(name + "_gt.png", final/ensemble_flag)
         mytime = time.time() - start
