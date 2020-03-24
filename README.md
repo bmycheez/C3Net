@@ -50,7 +50,7 @@ There are other options you can choose.
 Please refer to test.py.
 
 # Results (PSNR/SSIM)
-Track 1: Single Image - 41.05/0.99  
+Track 1: Single Image - 41.30/0.99  
 Track 2: Burst - 40.55/0.99  
 
 # Contact
