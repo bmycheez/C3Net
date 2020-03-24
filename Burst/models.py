@@ -215,13 +215,13 @@ class GAB(nn.Module):
 
 
 class Net(nn.Module):
-    def __init__(self, features=32):
+    def __init__(self, features=48):
         super(Net, self).__init__()
 
         kernel_size = 3
         self.conv_i = nn.Conv2d(in_channels=3, out_channels=features, kernel_size=1, stride=1, padding=0)
         self.relu1 = nn.PReLU()
-        self.GA = 7
+        self.GA = 5
         self.maxpool = GlobalMaxPool()
         self.GAB = nn.ModuleList()
         for _ in range(self.GA):
