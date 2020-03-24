@@ -197,30 +197,31 @@ class GAB(nn.Module):
             RB_outs.append(outR)
         outR = torch.cat(RB_outs, 1)
         outR = self.GFF_R(outR)
-
+        outR += out
         AB_outs = []
         for i in range(self.A):
             outA = self.AB[i](out)
             AB_outs.append(outA)
         outA = torch.cat(AB_outs, 1)
         outA = self.GFF_A(outA)
-
+        outA += out
         # outR *= self.softmax(outA)
         out = torch.cat([outR, outA], 1)
         out = self.relu2(self.conv_f(self.res2(out)))
+        out *= 0.2
         out += x
 
         return out
 
 
 class Net(nn.Module):
-    def __init__(self, features=48):
+    def __init__(self, features=32):
         super(Net, self).__init__()
 
         kernel_size = 3
         self.conv_i = nn.Conv2d(in_channels=3, out_channels=features, kernel_size=1, stride=1, padding=0)
         self.relu1 = nn.PReLU()
-        self.GA = 5
+        self.GA = 7
         self.maxpool = GlobalMaxPool()
         self.GAB = nn.ModuleList()
         for _ in range(self.GA):
@@ -243,7 +244,7 @@ class Net(nn.Module):
     def forward(self, x):
         b, im, c, h, w = x.size()
         out = self.relu1(self.conv_i(x.view((b*im, c, h, w))))
-
+        residual = out[3, :, :, :]
         GAB_outs = []
         for i in range(self.GA):
             out = self.GAB[i](out)
@@ -253,7 +254,7 @@ class Net(nn.Module):
             GAB_outs.append(out)
         out = torch.cat(GAB_outs, 1)
         out = self.GFF_GA(out.view((b, -1, h, w)))
-
+        out += residual
         out = self.relu2(self.conv_f(out))
         out += x[:, 3, :, :, :]
 
