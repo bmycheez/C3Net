@@ -3,11 +3,12 @@ This is a PyTorch implementation of the [New Trends in Image Restoration and Enh
 
 If you find our project useful in your research, please consider citing:
 ~~~
-@inproceedings{kim2020c3net,
-  title={C3Net: Demoireing Network Attentive in Channel, Color and Concatenation},
-  author={Kim, Sangmin and Nam, Hyungjoon and Kim, Jisu and Jeong, Jechang},
-  booktitle={Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition Workshops},
-  year={2020}
+@InProceedings{kim2020c3net,
+author = {Sangmin Kim and Hyungjoon Nam and Jisu Kim and Jechang Jeong},
+title = {C3Net: Demoiréing Network Attentive in Channel, Color and Concatenation},
+booktitle = {The IEEE Conference on Computer Vision and Pattern Recognition (CVPR) Workshops},
+month = {June},
+year = {2020}}
 ~~~
 
 # Dependencies
