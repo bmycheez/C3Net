@@ -1,14 +1,15 @@
 # C3Net
-This is a PyTorch implementation of the [New Trends in Image Restoration and Enhancement workshop and challenges on image and video restoration and enhancement (NTIRE 2020 with CVPR 2020)](https://data.vision.ee.ethz.ch/cvl/ntire20/) paper, [C3Net: Demoireing Network Attentive in Channel, Color and Concatenation](NTIRE_C3Net.pdf).
+This is a PyTorch implementation of the [New Trends in Image Restoration and Enhancement workshop and challenges on image and video restoration and enhancement (NTIRE 2020 with CVPR 2020)](https://data.vision.ee.ethz.ch/cvl/ntire20/) paper, [C3Net: Demoireing Network Attentive in Channel, Color and Concatenation](http://openaccess.thecvf.com/content_CVPRW_2020/html/w31/Kim_C3Net_Demoireing_Network_Attentive_in_Channel_Color_and_Concatenation_CVPRW_2020_paper.html).
 
 If you find our project useful in your research, please consider citing:
 ~~~
-@InProceedings{kim2020c3net,
-author = {Sangmin Kim and Hyungjoon Nam and Jisu Kim and Jechang Jeong},
-title = {C3Net: Demoiréing Network Attentive in Channel, Color and Concatenation},
-booktitle = {The IEEE Conference on Computer Vision and Pattern Recognition (CVPR) Workshops},
+@InProceedings{Kim_2020_CVPR_Workshops,
+author = {Kim, Sangmin and Nam, Hyungjoon and Kim, Jisu and Jeong, Jechang},
+title = {C3Net: Demoireing Network Attentive in Channel, Color and Concatenation},
+booktitle = {The IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) Workshops},
 month = {June},
-year = {2020}}
+year = {2020}
+}
 ~~~
 
 # Dependencies
