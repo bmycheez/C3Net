@@ -34,7 +34,8 @@ python train.py
 ~~~
 For training pre-trained model, download the model first.  
 [trained model (Track 1: Single Image)](https://drive.google.com/open?id=1X8kJEJ9oTjHlrHre9I920rp6qg8gj_jg)  
-[trained model (Track 2: Burst)](https://drive.google.com/open?id=1pzT2OMAmq7yEhmF_NQqiFwwg4FbofaOk)  
+[trained model (Track 2: Burst)](https://drive.google.com/open?id=1pzT2OMAmq7yEhmF_NQqiFwwg4FbofaOk)
+(Trained model was deleted because there is no space to save them.)
 Then, set the option --resume to where the downloaded model is.  
 There are other options you can choose.
 Please refer to train.py.
@@ -46,7 +47,8 @@ python test.py
 ~~~
 For testing pre-trained model, download the model first.  
 [trained model (Track 1: Single Image)](https://drive.google.com/open?id=1X8kJEJ9oTjHlrHre9I920rp6qg8gj_jg)  
-[trained model (Track 2: Burst)](https://drive.google.com/open?id=1pzT2OMAmq7yEhmF_NQqiFwwg4FbofaOk)  
+[trained model (Track 2: Burst)](https://drive.google.com/open?id=1pzT2OMAmq7yEhmF_NQqiFwwg4FbofaOk)
+(Trained model was deleted because there is no space to save them.)
 Then, set the option --logdir to where the downloded model is.  
 There are other options you can choose.
 Please refer to test.py.
