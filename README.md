@@ -19,24 +19,21 @@ PyTorch 1.4.0
 # Data
 [Reference](https://competitions.codalab.org/competitions/22223#participate-get_data)
 
+You have to sign in Codalab and apply to **NTIRE 2020 Demoireing Challenge** before getting the data. 
+
 # Proposed algorithm
-![C3Net (Track 1: Single Image)](Fig1_final.png)   
-![AVC_Block](fig2_must.png)   
-![AttBlock](Fig3.png)   
-![ResBlock](Fig4.png)   
-![C3Net-Burst (Track 2: Burst)](Fig5_final.png)   
-![AVC_Block-Burst](fig6_must.png)   
+![C3Net (Track 1: Single Image)](Figure_1.png)   
+![AVC_Block](Figure_2.png)   
+![AttBlock](Figure_3.png)   
+![ResBlock](Figure_4.png)   
+![C3Net-Burst (Track 2: Burst)](Figure_5.png)   
+![AVC_Block-Burst](Figure_6.png)   
 
 # Training
 Use the following command to use our training codes
 ~~~
 python train.py
 ~~~
-For training pre-trained model, download the model first.  
-[trained model (Track 1: Single Image)](https://drive.google.com/open?id=1X8kJEJ9oTjHlrHre9I920rp6qg8gj_jg)  
-[trained model (Track 2: Burst)](https://drive.google.com/open?id=1pzT2OMAmq7yEhmF_NQqiFwwg4FbofaOk)  
-(Trained model was deleted because there is no space to save them.)  
-Then, set the option --resume to where the downloaded model is.  
 There are other options you can choose.
 Please refer to train.py.
 
@@ -45,21 +42,32 @@ Use the following command to use our test codes
 ~~~
 python test.py
 ~~~
-For testing pre-trained model, download the model first.  
-[trained model (Track 1: Single Image)](https://drive.google.com/open?id=1X8kJEJ9oTjHlrHre9I920rp6qg8gj_jg)  
-[trained model (Track 2: Burst)](https://drive.google.com/open?id=1pzT2OMAmq7yEhmF_NQqiFwwg4FbofaOk)  
-(Trained model was deleted because there is no space to save them.)  
-Then, set the option --logdir to where the downloded model is.  
 There are other options you can choose.
 Please refer to test.py.
 
-# Results (PSNR/SSIM)
-Track 1: Single Image - 41.30/0.99  
-Track 2: Burst - 40.55/0.99  
+# Validation Server Results (PSNR/SSIM)
+Track 1: Single Image - 41.30/0.99 [Results -> Development](https://competitions.codalab.org/competitions/22223#results) 
+Track 2: Burst - 40.55/0.99 (Open only for challenge partipiciants.)
+
+# Testing Server Results (Final, PSNR/SSIM)
+Track 1: Single Image - 41.11/0.99
+Track 2: Burst - 40.33/0.99
+
+[Reference](https://arxiv.org/pdf/2005.03155.pdf)
 
 # Contact
 If you have any question about the code or paper, feel free to ask me to <ksmh1652@gmail.com>.
 
 # Acknowledgement
 Thanks for [SaoYan](https://github.com/SaoYan/DnCNN-PyTorch) who gave the implementaion of DnCNN.
+Thanks for [yun_yang](https://github.com/jt827859032/DRRN-pytorch) who gave th implementation of DRRN.
+
+Hint of color loss from [Jorge Pessoa](https://github.com/jorge-pessoa/pytorch-colors).
+Hint of concatenation and residual learning from [RDN (informal implementation)](https://github.com/lingtengqiu/RDN-pytorch).
+Hint of U-net block concatenation and residual learning from [DIDN (formal implementation)](https://github.com/SonghyunYu/DIDN).
+
+C3Net started from [RUN](https://github.com/bmycheez/RUN). 
+
+
+
 
