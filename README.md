@@ -60,14 +60,14 @@ Track 2: Burst - 40.33/0.99
 If you have any question about the code or paper, feel free to ask me to <ksmh1652@gmail.com>.
 
 # Acknowledgement
-Thanks for [SaoYan](https://github.com/SaoYan/DnCNN-PyTorch) who gave the implementaion of DnCNN.
-Thanks for [yun_yang](https://github.com/jt827859032/DRRN-pytorch) who gave th implementation of DRRN.
+Thanks for [SaoYan](https://github.com/SaoYan/DnCNN-PyTorch) who gave the implementaion of DnCNN.  
+Thanks for [yun_yang](https://github.com/jt827859032/DRRN-pytorch) who gave th implementation of DRRN.  
 
-Hint of color loss from [Jorge Pessoa](https://github.com/jorge-pessoa/pytorch-colors).
-Hint of concatenation and residual learning from [RDN (informal implementation)](https://github.com/lingtengqiu/RDN-pytorch).
-Hint of U-net block concatenation and residual learning from [DIDN (formal implementation)](https://github.com/SonghyunYu/DIDN).
+Hint of color loss from [Jorge Pessoa](https://github.com/jorge-pessoa/pytorch-colors).  
+Hint of concatenation and residual learning from [RDN (informal implementation)](https://github.com/lingtengqiu/RDN-pytorch).  
+Hint of U-net block concatenation and residual learning from [DIDN (formal implementation)](https://github.com/SonghyunYu/DIDN).  
 
-C3Net started from [RUN](https://github.com/bmycheez/RUN). 
+C3Net started from [RUN](https://github.com/bmycheez/RUN).   
 
 
 
