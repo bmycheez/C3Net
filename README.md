@@ -22,10 +22,10 @@ PyTorch 1.4.0
 You have to sign in Codalab and apply to **NTIRE 2020 Demoireing Challenge** before getting the data. 
 
 # Proposed algorithm
-![C3Net (Track 1: Single Image)](Figure/Figure_1.png)   
-![AVC_Block](Figure/Figure_2.png)   
-![AttBlock](Figure/Figure_3.png)   
-![ResBlock](Figure/Figure_4.png)   
+![C3Net (Track 1: Single Image)](Figure\Figure_1.png)   
+![AVC_Block](Figure\Figure_2.png)   
+![AttBlock](Figure\Figure_3.png)   
+![ResBlock](Figure\Figure_4.png)   
 ![C3Net-Burst (Track 2: Burst)](Figure/Figure_5.png)   
 ![AVC_Block-Burst](Figure/Figure_6.png)   
 
