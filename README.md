@@ -43,15 +43,7 @@ Use the following command to use our test codes
 python test.py
 ~~~
 There are other options you can choose.
-Please refer to test.py.
-
-# Validation Server Results (PSNR/SSIM)
-Track 1: Single Image - 41.30/0.99 [Results -> Development](https://competitions.codalab.org/competitions/22223#results)  
-Track 2: Burst - 40.55/0.99 (Open only for challenge partipiciants.)  
-
-# Testing Server Results (Final, PSNR/SSIM)
-Track 1: Single Image - 41.11/0.99  
-Track 2: Burst - 40.33/0.99  
+Please refer to test.py.  
 
 # Performance (PSNR/SSIM)
 [Results -> Development](https://competitions.codalab.org/competitions/22223#results) 
