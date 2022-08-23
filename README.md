@@ -48,7 +48,7 @@ Please refer to test.py.
 # Performance (PSNR/SSIM)
 To use heavier model, we also used numpy to read input data, not hdf5.
 [Hyung-Joon](https://github.com/Hyung-Joon) and [jisukim](https://github.com/jisus189) helped it.  
-**Our best records can be derived in [the code](https://github.com/Hyung-Joon/Demoire-Burst-single-master)**.  
+**Our best records can be derived in [the code](https://github.com/Hyung-Joon/Demoire-Burst-single-master)** <u>by changing h5 into numpy and reducing GPU memory</u>.  
 
 |Validation Server                                                                   |PSNR    |SSIM    |Rank    |
 |:-----------------------------------------------------------------------------------|:-------|:-------|:-------|
