@@ -53,19 +53,34 @@ Track 2: Burst - 40.55/0.99 (Open only for challenge partipiciants.)
 Track 1: Single Image - 41.11/0.99  
 Track 2: Burst - 40.33/0.99  
 
+# Performance (PSNR/SSIM)
+[Results -> Development](https://competitions.codalab.org/competitions/22223#results) 
+|Validation Server                                                                   |PSNR    |SSIM    |Rank    |
+|:-----------------------------------------------------------------------------------|:-------|:-------|:-------|
+|[Track 1: Single Image](https://competitions.codalab.org/competitions/22223#results)|41.30   |0.99    |9th     |
+|[Track 2: Burst](https://competitions.codalab.org/competitions/22224#results)       |40.55   |0.99    |5th     |  
+
+![Burst_Results_List](Burst_Results_List.PNG)
+  
 [Reference](https://arxiv.org/pdf/2005.03155.pdf)
-![Finaal_Results](Final_Results.PNG)
+|Testing Server       |PSNR    |SSIM    |Rank   |
+|:--------------------|:-------|:-------|:------|
+|Track 1: Single Image|41.11   |0.99    |4th    |
+|Track 2: Burst       |40.33   |0.99    |5th    |  
+
+![Final_Results](Final_Results.PNG)  
 
 # Contact
-If you have any question about the code or paper, feel free to ask me to <ksmh1652@gmail.com>.
+If you have any question about the code or paper, feel free to ask me to <ksmh1652@gmail.com>, <>.
 
 # Acknowledgement
 Thanks for [SaoYan](https://github.com/SaoYan/DnCNN-PyTorch) who gave the implementaion of DnCNN.  
-Thanks for [yun_yang](https://github.com/jt827859032/DRRN-pytorch) who gave th implementation of DRRN.  
+Thanks for [yun_yang](https://github.com/jt827859032/DRRN-pytorch) who gave the implementation of DRRN.  
+Thanks for [BumjunPark](https://github.com/BumjunPark/DHDN) who gave the implementation of DHDN.
 
 Hint of color loss from [Jorge Pessoa](https://github.com/jorge-pessoa/pytorch-colors).  
 Hint of concatenation and residual learning from [RDN (informal implementation)](https://github.com/lingtengqiu/RDN-pytorch).  
-Hint of U-net block concatenation and residual learning from [DIDN (formal implementation)](https://github.com/SonghyunYu/DIDN).  
+Hint of U-net block from [DIDN (formal implementation)](https://github.com/SonghyunYu/DIDN).  
 
 C3Net started from [RUN](https://github.com/bmycheez/RUN).   
 
