@@ -22,12 +22,12 @@ PyTorch 1.4.0
 You have to sign in Codalab and apply to **NTIRE 2020 Demoireing Challenge** before getting the data. 
 
 # Proposed algorithm
-![C3Net (Track 1: Single Image)](..\Figure\Figure_1.png)   
-![AVC_Block](./Figure/Figure_2.png)   
-![AttBlock](./Figure/Figure_3.png)   
-![ResBlock](Figure\Figure_4.png)   
-![C3Net-Burst (Track 2: Burst)](Figure/Figure_5.png)   
-![AVC_Block-Burst](Figure/Figure_6.png)   
+![C3Net (Track 1: Single Image)](Figure_1.png)   
+![AVC_Block](Figure_2.png)   
+![AttBlock](Figure_3.png)   
+![ResBlock](Figure_4.png)   
+![C3Net-Burst (Track 2: Burst)](Figure_5.png)   
+![AVC_Block-Burst](Figure_6.png)   
 
 # Training
 Use the following command to use our training codes
@@ -52,7 +52,7 @@ Please refer to test.py.
 |[Track 1: Single Image](https://competitions.codalab.org/competitions/22223#results)|41.30   |0.99    |9th     |
 |[Track 2: Burst](https://competitions.codalab.org/competitions/22224#results)       |40.55   |0.99    |5th     |  
 
-![Burst_Results_List](Figure/Burst_Results_List.PNG)
+![Burst_Results_List](Burst_Results_List.PNG)
   
 [Testing Server Reference](https://arxiv.org/pdf/2005.03155.pdf)
 |Testing Server       |PSNR    |SSIM    |Rank   |
@@ -60,10 +60,13 @@ Please refer to test.py.
 |Track 1: Single Image|41.11   |0.99    |4th    |
 |Track 2: Burst       |40.33   |0.99    |5th    |  
 
-![Final_Results](Figure/Final_Results.PNG)  
+[Award Certificates](https://data.vision.ee.ethz.ch/cvl/ntire20/NTIRE2020_award_certificates.pdf)
+![Honorable_Mention_Award](Figures/HMA.PNG)
+
+![Final_Results](Final_Results.PNG)  
 
 # Contact
-If you have any question about the code or paper, feel free to ask me to <ksmh1652@gmail.com>.
+If you have any question about the code or paper, feel free to ask me to <ksmh1652@gmail.com>, <>.
 
 # Acknowledgement
 Thanks for [SaoYan](https://github.com/SaoYan/DnCNN-PyTorch) who gave the implementaion of DnCNN.  
@@ -74,4 +77,7 @@ Hint of color loss from [Jorge Pessoa](https://github.com/jorge-pessoa/pytorch-c
 Hint of concatenation and residual learning from [RDN (informal implementation)](https://github.com/lingtengqiu/RDN-pytorch).  
 Hint of U-net block from [DIDN (formal implementation)](https://github.com/SonghyunYu/DIDN).  
 
-C3Net started from [RUN](https://github.com/bmycheez/RUN).   
+C3Net started from [RUN](https://github.com/bmycheez/RUN).  
+
+# More Details
+To use heavier model, 
