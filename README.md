@@ -63,9 +63,9 @@ To use heavier model, we also used numpy to read input data, not hdf5.
 |Track 1: Single Image|41.11   |0.99    |4th    |
 |Track 2: Burst       |40.33   |0.99    |5th    |  
 
-![Honorable_Mention_Award](Figures/HMA.PNG)
-
 ![Final_Results](Figures/Final_Results.PNG)  
+
+![Honorable_Mention_Award](Figures/HMA.PNG)  
 
 # Contact
 If you have any question about **Demoireing** model and the CVPR2020 challenge paper, feel free to ask me to <ksmh1652@gmail.com>.  
