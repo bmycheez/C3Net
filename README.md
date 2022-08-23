@@ -47,8 +47,8 @@ Please refer to test.py.
 
 # Performance (PSNR/SSIM)
 To use heavier model, we also used numpy to read input data, not hdf5.
-[Hyung-Joon](https://github.com/Hyung-Joon) and [jisukim](https://github.com/jisus189) helped it.
-**Our best records can be derived in [the code](https://github.com/Hyung-Joon/Demoire-Burst-single-master)**.
+[Hyung-Joon](https://github.com/Hyung-Joon) and [jisukim](https://github.com/jisus189) helped it.  
+**Our best records can be derived in [the code](https://github.com/Hyung-Joon/Demoire-Burst-single-master)**.  
 
 |Validation Server                                                                   |PSNR    |SSIM    |Rank    |
 |:-----------------------------------------------------------------------------------|:-------|:-------|:-------|
@@ -63,7 +63,6 @@ To use heavier model, we also used numpy to read input data, not hdf5.
 |Track 1: Single Image|41.11   |0.99    |4th    |
 |Track 2: Burst       |40.33   |0.99    |5th    |  
 
-[Award Certificates](https://data.vision.ee.ethz.ch/cvl/ntire20/NTIRE2020_award_certificates.pdf)
 ![Honorable_Mention_Award](Figures/HMA.PNG)
 
 ![Final_Results](Figures/Final_Results.PNG)  
