@@ -46,7 +46,7 @@ There are other options you can choose.
 Please refer to test.py.  
 
 # Performance (PSNR/SSIM)
-[Results -> Development](https://competitions.codalab.org/competitions/22223#results) 
+
 |Validation Server                                                                   |PSNR    |SSIM    |Rank    |
 |:-----------------------------------------------------------------------------------|:-------|:-------|:-------|
 |[Track 1: Single Image](https://competitions.codalab.org/competitions/22223#results)|41.30   |0.99    |9th     |
@@ -54,7 +54,7 @@ Please refer to test.py.
 
 ![Burst_Results_List](Burst_Results_List.PNG)
   
-[Reference](https://arxiv.org/pdf/2005.03155.pdf)
+[Testing Server Reference](https://arxiv.org/pdf/2005.03155.pdf)
 |Testing Server       |PSNR    |SSIM    |Rank   |
 |:--------------------|:-------|:-------|:------|
 |Track 1: Single Image|41.11   |0.99    |4th    |
@@ -75,7 +75,3 @@ Hint of concatenation and residual learning from [RDN (informal implementation)]
 Hint of U-net block from [DIDN (formal implementation)](https://github.com/SonghyunYu/DIDN).  
 
 C3Net started from [RUN](https://github.com/bmycheez/RUN).   
-
-
-
-
