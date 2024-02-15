@@ -4,12 +4,13 @@ import natsort
 import pytorch_lightning as pl
 
 from PIL import Image
-from torchvision.transforms import ToTensor
+from torchvision.transforms import Compose, ToTensor
 
 
 class CFAMoire(torch.utils.data.Dataset):
     def __init__(self,
-                 root: str = 'D:/data/NTIRE2020/moire/train_burst/'):
+                 root: str = 'D:/data/NTIRE2020/moire/train_burst/',
+                 transform=None):
         super().__init__()
 
         self.root = {'input': None, 'gt': None}
@@ -18,7 +19,7 @@ class CFAMoire(torch.utils.data.Dataset):
         self.n_input = len(glob.glob(f"{self.root['input']}/000000*.png"))
         self._get_image_list()
 
-        self.to_tensor = ToTensor()
+        self.transform = transform
 
     def _get_image_list(self):
         for key in self.root:
@@ -30,7 +31,7 @@ class CFAMoire(torch.utils.data.Dataset):
                    key: str = 'input',
                    index: int = 0):
         image = Image.open(self.root[key][index]).convert('RGB')
-        return self.to_tensor(image)
+        return self.transform(image)
 
     def __len__(self):
         return int(len(self.root['input']) / self.n_input)
@@ -59,7 +60,7 @@ class CFAMoire(torch.utils.data.Dataset):
 
 class LightningDataset(pl.LightningDataModule):
     def __init__(self,
-                 root: str,
+                 root: dict[str] = {'train': None, 'val': None, 'test': None},
                  batch_size: dict[int] = {'train': 1, 'val': 1, 'test': 1},
                  num_workers: dict[int] = {'train': 4, 'val': 4, 'test': 4},
                  shuffle: dict[bool] =
@@ -69,11 +70,6 @@ class LightningDataset(pl.LightningDataModule):
                  ):
         super().__init__()
         self.root = root
-        if 'moire' in self.root:
-            self.ds = CFAMoire(root=self.root)
-        else:
-            raise NotImplementedError
-
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.shuffle = shuffle
@@ -82,12 +78,22 @@ class LightningDataset(pl.LightningDataModule):
     def prepare_data(self):
         pass
 
-    def setup(self, stage=None):
-        pass
+    def setup(self,
+              stage: str = None):
+        if 'moire' in self.root['train']:
+            self.transform = Compose([ToTensor()])
+            self.ds_train = CFAMoire(root=self.root['train'],
+                                     transform=Compose([ToTensor()]))
+            self.ds_val = CFAMoire(root=self.root['val'],
+                                   transform=Compose([ToTensor()]))
+            self.ds_test = CFAMoire(root=self.root['test'],
+                                    transform=Compose([ToTensor()]))
+        else:
+            raise NotImplementedError
 
     def train_dataloader(self):
         return torch.utils.data.DataLoader(
-            self.ds,
+            self.ds_train,
             batch_size=self.batch_size['train'],
             num_workers=self.num_workers['train'],
             shuffle=self.shuffle['train'],
@@ -96,7 +102,7 @@ class LightningDataset(pl.LightningDataModule):
 
     def val_dataloader(self):
         return torch.utils.data.DataLoader(
-            self.ds,
+            self.ds_val,
             batch_size=self.batch_size['val'],
             num_workers=self.num_workers['val'],
             shuffle=self.shuffle['val'],
@@ -105,7 +111,7 @@ class LightningDataset(pl.LightningDataModule):
 
     def test_dataloader(self):
         return torch.utils.data.DataLoader(
-            self.ds,
+            self.ds_test,
             batch_size=self.batch_size['test'],
             num_workers=self.num_workers['test'],
             shuffle=self.shuffle['test'],
@@ -120,17 +126,24 @@ if __name__ == '__main__':
     test_dataset = CFAMoire(root='D:/data/NTIRE2020/moire/test_burst/')
     print(len(train_dataset.root['input']))
     print(train_dataset.__len__(), test_dataset.__len__())
+
     # DataLoader
-    dm1 = LightningDataset(root='D:/data/NTIRE2020/moire/train_burst/')
-    train_dataloader = dm1.train_dataloader()
+    dm = LightningDataset(
+        root={'train': 'D:/data/NTIRE2020/moire/train_burst/',
+              'val': 'D:/data/NTIRE2020/moire/val_burst/',
+              'test': 'D:/data/NTIRE2020/moire/test_burst/'}
+        )
+    dm.setup()
+
+    train_dataloader = dm.train_dataloader()
     print(len(train_dataloader))
     for i, (noisy, denoised) in enumerate(train_dataloader):
-        print(len(noisy), noisy[3].size())
-        print(len(denoised), denoised[0].size())
+        print(len(noisy), noisy[3].size(), torch.mean(noisy[3]))
+        print(len(denoised), denoised[0].size(), torch.mean(denoised[0]))
         break
-    dm2 = LightningDataset(root='D:/data/NTIRE2020/moire/val_burst/')
-    val_dataloader = dm2.val_dataloader()
+
+    val_dataloader = dm.val_dataloader()
     print(len(val_dataloader))
     for i, (noisy) in enumerate(val_dataloader):
-        print(len(noisy), noisy[3].size())
+        print(len(noisy), noisy[0].size(), torch.mean(noisy[0]))
         break
