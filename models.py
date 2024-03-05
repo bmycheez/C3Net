@@ -4,6 +4,28 @@ from torch.nn import (Module, Sequential, Conv2d, PReLU, ReLU, Sigmoid,
                       AdaptiveAvgPool2d, PixelShuffle)
 from datasets import LightningDataset
 
+# GPU 11GB
+single_model_config = {
+    'num_frames': 1,
+    'features': 64,
+    'kernel_size': 3,
+    'num_global': 22,
+    'num_residual': 2,
+    'num_attention': 1,
+    'scale_residual': 0.2,
+}
+
+# GPU 8GB
+burst_model_config = {
+    'num_frames': 7,
+    'features': 48,
+    'kernel_size': 3,
+    'num_global': 5,
+    'num_residual': 2,
+    'num_attention': 1,
+    'scale_residual': 1.0,
+}
+
 
 class RB(Module):
     def __init__(self,
@@ -254,22 +276,15 @@ class GAB(Module):
 
 
 class C3Net(Module):
-    def __init__(self,
-                 num_frames: int = 7,
-                 features: int = 48,
-                 kernel_size: int = 3,
-                 num_global: int = 5,
-                 num_residual: int = 2,
-                 num_attention: int = 1,
-                 scale_residual: float = 1.0):
+    def __init__(self, config):
         super(C3Net, self).__init__()
-        self.num_frames = num_frames
-        self.features = features
-        self.kernel_size = kernel_size
-        self.num_global = num_global
-        self.num_residual = num_residual
-        self.num_attention = num_attention
-        self.scale_residual = scale_residual
+        self.num_frames = config['num_frames']
+        self.features = config['features']
+        self.kernel_size = config['kernel_size']
+        self.num_global = config['num_global']
+        self.num_residual = config['num_residual']
+        self.num_attention = config['num_attention']
+        self.scale_residual = config['scale_residual']
 
         self.conv_i = Conv2d(in_channels=3,
                              out_channels=self.features,
@@ -349,7 +364,9 @@ class C3Net(Module):
             outs.append(out)
         out = torch.cat(outs, 1)
 
-        out = self.fusion(out.view((b, -1, h, w)))
+        if self.num_frames != 1:
+            out = out.view((b, -1, h, w))
+        out = self.fusion(out)
         out = self.relu_o(self.conv_o(out))
         out += residual
         return out
@@ -357,7 +374,8 @@ class C3Net(Module):
 
 if __name__ == "__main__":
     # Model
-    model = C3Net()
+    single_model = C3Net(single_model_config)
+    burst_model = C3Net(burst_model_config)
 
     # DataLoader
     dm = LightningDataset(
@@ -367,25 +385,35 @@ if __name__ == "__main__":
         )
     dm.setup()
 
-    model.train()
+    single_model.train()
     train_dataloader = dm.train_dataloader()
     print(len(train_dataloader))
+    for i, (noisy, denoised) in enumerate(train_dataloader):
+        print(len(noisy), noisy[0].size(), torch.mean(noisy[0]))
+        print(len(denoised), denoised[0].size(), torch.mean(denoised[0]))
+        inp = noisy[0]
+        print(inp.size(), torch.mean(inp))
+        outp = single_model(inp)
+        print(outp.size(), torch.mean(outp))
+        break
+
+    burst_model.train()
     for i, (noisy, denoised) in enumerate(train_dataloader):
         print(len(noisy), noisy[3].size(), torch.mean(noisy[3]))
         print(len(denoised), denoised[0].size(), torch.mean(denoised[0]))
         inp = torch.stack(noisy, dim=1)
         print(inp.size(), torch.mean(inp))
-        outp = model(inp)
+        outp = burst_model(inp)
         print(outp.size(), torch.mean(outp))
         break
 
-    model.eval()
+    burst_model.eval()
     val_dataloader = dm.val_dataloader()
     print(len(val_dataloader))
     for i, (noisy) in enumerate(val_dataloader):
         print(len(noisy), noisy[0].size(), torch.mean(noisy[0]))
         inp = torch.stack(noisy, dim=1)
         print(inp.size(), torch.mean(inp))
-        outp = model(inp)
+        outp = burst_model(inp)
         print(outp.size(), torch.mean(outp))
         break
