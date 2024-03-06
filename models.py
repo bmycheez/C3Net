@@ -1,7 +1,15 @@
 import torch
+import numpy as np
 
 from torch.nn import (Module, Sequential, Conv2d, PReLU, ReLU, Sigmoid,
                       AdaptiveAvgPool2d, PixelShuffle)
+from lightning import LightningModule
+from kornia.color import rgb_to_yuv
+from skimage.metrics import peak_signal_noise_ratio
+
+# https://github.com/VainF/pytorch-msssim
+from pytorch_msssim import SSIM, MS_SSIM, ssim
+
 from datasets import LightningDataset
 
 # GPU 11GB
@@ -25,6 +33,116 @@ burst_model_config = {
     'num_attention': 1,
     'scale_residual': 1.0,
 }
+
+
+class MyLightning(LightningModule):
+    def __init__(self,
+                 model_mode: str = 'burst',
+                 loss_mode: str = 'l1+color'):
+        super().__init__()
+        self.model_mode = model_mode
+        if self.model_mode == 'single':
+            self.model = C3Net(config=single_model_config)
+        elif self.model_mode == 'burst':
+            self.model = C3Net(config=burst_model_config)
+        else:
+            raise NotImplementedError
+
+        self.loss_mode = loss_mode
+
+        self.validation_psnr = []
+        self.validation_ssim = []
+
+    def training_step(self, batch, batch_idx):
+        noisy, clean = batch
+
+        if self.model_mode == 'single':
+            inp = noisy[0]
+        elif self.model_mode == 'burst':
+            inp = torch.stack(noisy, dim=1)
+        else:
+            raise NotImplementedError
+        outp = self.model(inp)
+
+        if self.loss_mode == 'l1+color':
+            loss = torch.nn.functional.l1_loss(outp, clean) + \
+                self.color_loss(outp, clean)
+            loss /= 2
+        elif self.loss_mode == 'l1+ms_ssim':
+            loss = torch.nn.functional.l1_loss(outp, clean) + \
+                self.ms_ssim_loss(outp, clean)
+            loss /= 2
+        elif self.loss_mode == 'l1+ssim':
+            loss = torch.nn.functional.l1_loss(outp, clean) + \
+                self.ssim_loss(outp, clean)
+            loss /= 2
+        elif self.loss_mode == 'l1':
+            loss = torch.nn.functional.l1_loss(outp, clean)
+        elif self.loss_mode == 'l2':
+            loss = torch.nn.functional.l2_loss(outp, clean)
+        else:
+            raise NotImplementedError
+
+        self.log('train_loss', loss,
+                 on_step=True, on_epoch=True, prog_bar=True, logger=True)
+
+        return loss
+
+    def color_loss(self, outp, clean):
+        out_yuv = rgb_to_yuv(outp)
+        out_u = out_yuv[:, 1, :, :]
+        out_v = out_yuv[:, 2, :, :]
+        target_yuv = rgb_to_yuv(clean)
+        target_u = target_yuv[:, 1, :, :]
+        target_v = target_yuv[:, 2, :, :]
+
+        return torch.div(
+            torch.mean((out_u - target_u).pow(1)).abs() +
+            torch.mean((out_v - target_v).pow(1)).abs(), 2)
+
+    def ms_ssim_loss(self, outp, clean):
+        ms_ssim_module = MS_SSIM(data_range=1., size_average=True, channel=3)
+        return 1 - ms_ssim_module(outp, clean)
+
+    def ssim_loss(self, outp, clean):
+        ssim_module = SSIM(data_range=1., size_average=True, channel=3)
+        return 1 - ssim_module(outp, clean)
+
+    def validation_step(self, batch, batch_idx):
+        noisy, clean = batch
+        if self.model_mode == 'single':
+            inp = noisy[0]
+        elif self.model_mode == 'burst':
+            inp = torch.stack(noisy, dim=1)
+        else:
+            raise NotImplementedError
+
+        outp = torch.clamp(self.model(inp), 0, 1)
+        self.validation_psnr.append(peak_signal_noise_ratio(outp, clean, 1.))
+        self.validation_ssim.append(ssim(outp, clean, 1., size_average=False))
+
+    def on_validation_epoch_end(self):
+        mean_psnr = sum(self.validation_psnr) / len(self.validation_psnr)
+        mean_ssim = sum(self.validation_psnr) / len(self.validation_psnr)
+        self.log('psnr', mean_psnr,
+                 on_step=False, on_epoch=True, prog_bar=True, logger=True)
+        self.log('ssim', mean_ssim,
+                 on_step=False, on_epoch=True, prog_bar=True, logger=True)
+
+    def psnr(self, outp, clean, data_range=1.):
+        outp = outp.data.cpu().numpy().astype(np.float32)
+        clean = clean.data.cpu().numpy().astype(np.float32)
+        PSNR = 0
+        for i in range(outp.shape[0]):
+            PSNR += peak_signal_noise_ratio(
+                clean[i, :, :, :], outp[i, :, :, :], data_range=data_range)
+        return (PSNR/outp.shape[0])
+
+    def configure_optimizers(self):
+        optimizer = torch.optim.Adam(self.model.parameters(), lr=1e-4)
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
+                                                    step_size=10, gamma=0.5)
+        return optimizer, scheduler
 
 
 class RB(Module):
@@ -388,9 +506,9 @@ if __name__ == "__main__":
     single_model.train()
     train_dataloader = dm.train_dataloader()
     print(len(train_dataloader))
-    for i, (noisy, denoised) in enumerate(train_dataloader):
+    for i, (noisy, clean) in enumerate(train_dataloader):
         print(len(noisy), noisy[0].size(), torch.mean(noisy[0]))
-        print(len(denoised), denoised[0].size(), torch.mean(denoised[0]))
+        print(len(clean), clean[0].size(), torch.mean(clean[0]))
         inp = noisy[0]
         print(inp.size(), torch.mean(inp))
         outp = single_model(inp)
@@ -398,9 +516,9 @@ if __name__ == "__main__":
         break
 
     burst_model.train()
-    for i, (noisy, denoised) in enumerate(train_dataloader):
+    for i, (noisy, clean) in enumerate(train_dataloader):
         print(len(noisy), noisy[3].size(), torch.mean(noisy[3]))
-        print(len(denoised), denoised[0].size(), torch.mean(denoised[0]))
+        print(len(clean), clean[0].size(), torch.mean(clean[0]))
         inp = torch.stack(noisy, dim=1)
         print(inp.size(), torch.mean(inp))
         outp = burst_model(inp)
