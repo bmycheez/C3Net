@@ -3,14 +3,16 @@ import numpy as np
 
 from torch.nn import (Module, Sequential, Conv2d, PReLU, ReLU, Sigmoid,
                       AdaptiveAvgPool2d, PixelShuffle)
-from lightning import LightningModule
+from lightning import LightningModule, Trainer
 from kornia.color import rgb_to_yuv
 from skimage.metrics import peak_signal_noise_ratio
 
 # https://github.com/VainF/pytorch-msssim
-from pytorch_msssim import SSIM, MS_SSIM, ssim
+from pytorch_msssim import SSIM, MS_SSIM
 
 from datasets import LightningDataset
+
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # GPU 11GB
 single_model_config = {
@@ -40,13 +42,16 @@ class MyLightning(LightningModule):
                  model_mode: str = 'burst',
                  loss_mode: str = 'l1+color'):
         super().__init__()
+        self.to(device)
+
         self.model_mode = model_mode
         if self.model_mode == 'single':
-            self.model = C3Net(config=single_model_config)
+            self.model = C3Net(config=single_model_config).to(device)
         elif self.model_mode == 'burst':
-            self.model = C3Net(config=burst_model_config)
+            self.model = C3Net(config=burst_model_config).to(device)
         else:
             raise NotImplementedError
+        # print(next(self.model.parameters()).is_cuda)
 
         self.loss_mode = loss_mode
 
@@ -63,28 +68,31 @@ class MyLightning(LightningModule):
         else:
             raise NotImplementedError
         outp = self.model(inp)
+        gt = clean[0]
 
         if self.loss_mode == 'l1+color':
-            loss = torch.nn.functional.l1_loss(outp, clean) + \
-                self.color_loss(outp, clean)
+            loss = torch.nn.functional.l1_loss(outp, gt) + \
+                self.color_loss(outp, gt)
             loss /= 2
         elif self.loss_mode == 'l1+ms_ssim':
-            loss = torch.nn.functional.l1_loss(outp, clean) + \
-                self.ms_ssim_loss(outp, clean)
+            loss = torch.nn.functional.l1_loss(outp, gt) + \
+                self.ms_ssim_loss(outp, gt)
             loss /= 2
         elif self.loss_mode == 'l1+ssim':
-            loss = torch.nn.functional.l1_loss(outp, clean) + \
-                self.ssim_loss(outp, clean)
+            loss = torch.nn.functional.l1_loss(outp, gt) + \
+                self.ssim_loss(outp, gt)
             loss /= 2
         elif self.loss_mode == 'l1':
-            loss = torch.nn.functional.l1_loss(outp, clean)
+            loss = torch.nn.functional.l1_loss(outp, gt)
         elif self.loss_mode == 'l2':
-            loss = torch.nn.functional.l2_loss(outp, clean)
+            loss = torch.nn.functional.l2_loss(outp, gt)
         else:
             raise NotImplementedError
 
         self.log('train_loss', loss,
                  on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        # self.validation_psnr.append(peak_signal_noise_ratio(outp, gt))
+        # self.validation_ssim.append(ssim(outp, gt, 1., size_average=False))
 
         return loss
 
@@ -108,26 +116,14 @@ class MyLightning(LightningModule):
         ssim_module = SSIM(data_range=1., size_average=True, channel=3)
         return 1 - ssim_module(outp, clean)
 
-    def validation_step(self, batch, batch_idx):
-        noisy, clean = batch
-        if self.model_mode == 'single':
-            inp = noisy[0]
-        elif self.model_mode == 'burst':
-            inp = torch.stack(noisy, dim=1)
-        else:
-            raise NotImplementedError
-
-        outp = torch.clamp(self.model(inp), 0, 1)
-        self.validation_psnr.append(peak_signal_noise_ratio(outp, clean, 1.))
-        self.validation_ssim.append(ssim(outp, clean, 1., size_average=False))
-
-    def on_validation_epoch_end(self):
-        mean_psnr = sum(self.validation_psnr) / len(self.validation_psnr)
-        mean_ssim = sum(self.validation_psnr) / len(self.validation_psnr)
-        self.log('psnr', mean_psnr,
-                 on_step=False, on_epoch=True, prog_bar=True, logger=True)
-        self.log('ssim', mean_ssim,
-                 on_step=False, on_epoch=True, prog_bar=True, logger=True)
+    def on_training_epoch_end(self):
+        pass
+        # mean_psnr = sum(self.validation_psnr) / len(self.validation_psnr)
+        # mean_ssim = sum(self.validation_psnr) / len(self.validation_psnr)
+        # self.log('psnr', mean_psnr,
+        #          on_step=False, on_epoch=True, prog_bar=True, logger=True)
+        # self.log('ssim', mean_ssim,
+        #          on_step=False, on_epoch=True, prog_bar=True, logger=True)
 
     def psnr(self, outp, clean, data_range=1.):
         outp = outp.data.cpu().numpy().astype(np.float32)
@@ -142,7 +138,7 @@ class MyLightning(LightningModule):
         optimizer = torch.optim.Adam(self.model.parameters(), lr=1e-4)
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
                                                     step_size=10, gamma=0.5)
-        return optimizer, scheduler
+        return [optimizer], [scheduler]
 
 
 class RB(Module):
@@ -151,6 +147,7 @@ class RB(Module):
                  kernel_size: int = 3,
                  reduction: int = 16):
         super(RB, self).__init__()
+
         self.features = features
         self.kernel_size = kernel_size
         self.reduction = reduction
@@ -239,7 +236,7 @@ class AB(Module):
                     num: int):
         layers = []
         for _ in range(num):
-            layers.append(block(features=features))
+            layers.append(block(features=features).to(device))
         return Sequential(*layers)
 
     def _down(self,
@@ -262,7 +259,6 @@ class AB(Module):
         )
 
     def forward(self, x):
-
         conc1 = self.seq_residual1b(x)
         out = self.down12(conc1)
 
@@ -327,7 +323,7 @@ class GAB(Module):
                     l: bool = False):
         layers = []
         for _ in range(num):
-            layers.append(block(features=features))
+            layers.append(block(features=features).to(device))
         return Sequential(*layers) if not l else layers
 
     def _residual(self,
@@ -440,7 +436,7 @@ class C3Net(Module):
                       kernel_size=self.kernel_size,
                       num_residual=self.num_residual,
                       num_attention=self.num_attention,
-                      scale_residual=self.scale_residual)
+                      scale_residual=self.scale_residual).to(device)
             )
         return Sequential(*layers) if not l else layers
 
@@ -491,47 +487,18 @@ class C3Net(Module):
 
 
 if __name__ == "__main__":
-    # Model
-    single_model = C3Net(single_model_config)
-    burst_model = C3Net(burst_model_config)
-
     # DataLoader
-    dm = LightningDataset(
+    dataset = LightningDataset(
         root={'train': 'D:/data/NTIRE2020/moire/train_burst/',
               'val': 'D:/data/NTIRE2020/moire/val_burst/',
               'test': 'D:/data/NTIRE2020/moire/test_burst/'}
         )
-    dm.setup()
+    dataset.setup()
+    train_dataloader = dataset.train_dataloader()
+    val_dataloader = dataset.val_dataloader()
 
-    single_model.train()
-    train_dataloader = dm.train_dataloader()
-    print(len(train_dataloader))
-    for i, (noisy, clean) in enumerate(train_dataloader):
-        print(len(noisy), noisy[0].size(), torch.mean(noisy[0]))
-        print(len(clean), clean[0].size(), torch.mean(clean[0]))
-        inp = noisy[0]
-        print(inp.size(), torch.mean(inp))
-        outp = single_model(inp)
-        print(outp.size(), torch.mean(outp))
-        break
-
-    burst_model.train()
-    for i, (noisy, clean) in enumerate(train_dataloader):
-        print(len(noisy), noisy[3].size(), torch.mean(noisy[3]))
-        print(len(clean), clean[0].size(), torch.mean(clean[0]))
-        inp = torch.stack(noisy, dim=1)
-        print(inp.size(), torch.mean(inp))
-        outp = burst_model(inp)
-        print(outp.size(), torch.mean(outp))
-        break
-
-    burst_model.eval()
-    val_dataloader = dm.val_dataloader()
-    print(len(val_dataloader))
-    for i, (noisy) in enumerate(val_dataloader):
-        print(len(noisy), noisy[0].size(), torch.mean(noisy[0]))
-        inp = torch.stack(noisy, dim=1)
-        print(inp.size(), torch.mean(inp))
-        outp = burst_model(inp)
-        print(outp.size(), torch.mean(outp))
-        break
+    # Trainer
+    model = MyLightning(model_mode='burst', loss_mode='l1+color')
+    trainer = Trainer(max_epochs=1, accelerator='cuda', devices=[0])
+    trainer.fit(model=model,
+                train_dataloaders=train_dataloader)

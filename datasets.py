@@ -1,8 +1,8 @@
 import glob
 import torch
 import natsort
-import pytorch_lightning as pl
 
+from lightning import LightningDataModule
 from PIL import Image
 from torchvision.transforms import Compose, ToTensor
 
@@ -58,7 +58,7 @@ class CFAMoire(torch.utils.data.Dataset):
             raise NotImplementedError
 
 
-class LightningDataset(pl.LightningDataModule):
+class LightningDataset(LightningDataModule):
     def __init__(self,
                  root: dict[str] = {'train': None, 'val': None, 'test': None},
                  batch_size: dict[int] = {'train': 1, 'val': 1, 'test': 1},
@@ -97,7 +97,8 @@ class LightningDataset(pl.LightningDataModule):
             batch_size=self.batch_size['train'],
             num_workers=self.num_workers['train'],
             shuffle=self.shuffle['train'],
-            drop_last=self.drop_last['train']
+            drop_last=self.drop_last['train'],
+            persistent_workers=True
         )
 
     def val_dataloader(self):
